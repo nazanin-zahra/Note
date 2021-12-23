@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
@@ -27,6 +28,7 @@ fun main() = application {
     ) {
         MaterialTheme {
             Row {
+                val clickedIndex = remember { mutableStateOf(0) }
                 val noteState = remember { mutableStateOf("") }
                 val notes = remember {
                     mutableStateListOf(
@@ -50,31 +52,44 @@ fun main() = application {
                             },
                             onNoteClicked = {
                                 noteState.value = note.data
+                                clickedIndex.value = notes.indexOf(note)
                             }
 
 
                         )
                     }
                 }
-                Column(
+                Box(
                     modifier = Modifier
                         .weight(0.6f)
-                        .fillMaxHeight(),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .fillMaxHeight()
                 ) {
-                    OutlinedTextField(
-                        value = noteState.value,
-                        onValueChange = {
-                            noteState.value = it
-                        },
-                        label = {
-                            Text("note")
-                        },
-                        colors = TextFieldDefaults.outlinedTextFieldColors(),
-                        modifier = Modifier
-                            .padding(8.dp)
+                    Column (
+                        horizontalAlignment = Alignment.CenterHorizontally
+                            ){
+                        OutlinedTextField(
+                            value = noteState.value,
+                            onValueChange = {
+                                noteState.value = it
+                            },
+                            label = {
+                                Text("note")
+                            },
+                            colors = TextFieldDefaults.outlinedTextFieldColors(),
+                            modifier = Modifier
+                                .padding(8.dp)
 
-                    )
+                        )
+
+                        Button(onClick = {
+                            val clickedNote = notes[clickedIndex.value]
+                            val newNote = clickedNote.copy(data = noteState.value)
+                            notes[clickedIndex.value] = newNote
+                        }
+                        ) {
+                            Text("save")
+                        }
+                    }
                 }
             }
         }
@@ -100,7 +115,9 @@ fun NoteItem(data: String, deleteNote: () -> Unit, onNoteClicked: () -> Unit) {
             color = Color.Black,
             fontWeight = FontWeight.Bold,
             maxLines = 1,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
+            overflow = TextOverflow.Ellipsis
+
         )
         IconButton(onClick = {
             deleteNote()
