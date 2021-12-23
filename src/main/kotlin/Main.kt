@@ -14,10 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 
+@ExperimentalUnitApi
 fun main() = application {
     Window(
         onCloseRequest = ::exitApplication,
@@ -25,6 +27,7 @@ fun main() = application {
     ) {
         MaterialTheme {
             Row {
+                val noteState = remember { mutableStateOf("") }
                 val notes = remember {
                     mutableStateListOf(
                         Note("today was the best ."),
@@ -44,6 +47,9 @@ fun main() = application {
                             data = note.data,
                             deleteNote = {
                                 notes.remove(note)
+                            },
+                            onNoteClicked = {
+                                noteState.value = note.data
                             }
 
 
@@ -56,7 +62,19 @@ fun main() = application {
                         .fillMaxHeight(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    OutlinedTextField(
+                        value = noteState.value,
+                        onValueChange = {
+                            noteState.value = it
+                        },
+                        label = {
+                            Text("note")
+                        },
+                        colors = TextFieldDefaults.outlinedTextFieldColors(),
+                        modifier = Modifier
+                            .padding(8.dp)
 
+                    )
                 }
             }
         }
@@ -64,15 +82,15 @@ fun main() = application {
 }
 
 @Composable
-fun NoteItem(data: String, deleteNote: () -> Unit) {
+fun NoteItem(data: String, deleteNote: () -> Unit, onNoteClicked: () -> Unit) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .clip(RoundedCornerShape(8.dp))
-            .clickable {  }
+            .clickable { onNoteClicked() }
             .padding(8.dp)
             .fillMaxWidth()
-         //   .background(color = Color.LightGray)
+        //   .background(color = Color.LightGray)
 
 
     ) {
@@ -81,7 +99,7 @@ fun NoteItem(data: String, deleteNote: () -> Unit) {
             text = data,
             color = Color.Black,
             fontWeight = FontWeight.Bold,
-            maxLines =1,
+            maxLines = 1,
             modifier = Modifier.weight(1f)
         )
         IconButton(onClick = {
