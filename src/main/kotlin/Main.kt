@@ -23,26 +23,41 @@ import androidx.compose.ui.unit.ExperimentalUnitApi
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import java.sql.DriverManager
 
 @ExperimentalUnitApi
 fun main() = application {
+    val connection = DriverManager.getConnection("jdbc:sqlite:src/main/kotlin/Main/NoteItems.db")
+    val statement = connection.createStatement()
+    val result = statement.executeQuery("SELECT * FROM NoteTable")
+
     Window(
         onCloseRequest = ::exitApplication,
         title = "Note"
     ) {
         MaterialTheme {
             Row {
+                val notes = remember {
+                    val list = mutableStateListOf<Note>()
+
+                    while (result.next()) {
+                        val id = result.getInt("NoteID")
+                        val data = result.getString("data")
+
+
+                        list.add(
+                            Note(
+                                noteID = id,
+                                data = data
+                            )
+                        )
+                    }
+                    list
+                }
                 val clickedIndex = remember { mutableStateOf(0) }
                 val noteState = remember { mutableStateOf("") }
                 val noteErrorState = remember { mutableStateOf(false) }
-                val notes = remember {
-                    mutableStateListOf(
-                        Note("today was the best ."),
-                        Note("i was unhappy todayyyy  cause i couldnt end up my exams with good gradddddesss."),
-                        Note("you have english class today .i have a lot of things to do . "),
-                        Note("am i crazy?"),
-                    )
-                }
+
                 LazyColumn(
                     modifier = Modifier
                         .weight(weight = 0.4f)
@@ -123,7 +138,7 @@ fun main() = application {
                     FloatingActionButton(
                         onClick = {
                             noteState.value = ""
-                            val element = Note(data = "")
+                            val element = Note(data = "", noteID = null)
                             notes.add(element)
                             clickedIndex.value = notes.indexOf(element)
                             noteErrorState.value = false
