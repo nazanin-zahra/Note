@@ -128,6 +128,12 @@ fun main() = application {
                                 val clickedNote = notes[clickedIndex.value]
                                 val newNote = clickedNote.copy(data = noteState.value)
                                 notes[clickedIndex.value] = newNote
+                                statement.executeUpdate(
+                                    "UPDATE NoteTable SET " +
+                                            "NoteID='${newNote.noteID}', " +
+                                            "data='${newNote.data}' " +
+                                            "WHERE NoteID='${clickedNote.noteID}'"
+                                )
                             }
                         }
                         ) {
