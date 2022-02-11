@@ -1,1 +1,1 @@
-data class Note(val data: String)
+data class Note(val noteID: Int?, val data: String)
