@@ -69,6 +69,7 @@ fun main() = application {
                         NoteItem(
                             data = note.data,
                             deleteNote = {
+                                statement.executeUpdate("DELET FROM NoteTable WHERE NoteID='${note.noteID}'")
                                 notes.remove(note)
                             },
                             onNoteClicked = {
