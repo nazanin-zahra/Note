@@ -27,7 +27,7 @@ import java.sql.DriverManager
 
 @ExperimentalUnitApi
 fun main() = application {
-    val connection = DriverManager.getConnection("jdbc:sqlite:src/main/kotlin/Main/NoteItems.db")
+    val connection = DriverManager.getConnection("jdbc:sqlite:src/main/NoteItems.db")
     val statement = connection.createStatement()
     val result = statement.executeQuery("SELECT * FROM NoteTable")
 
@@ -43,7 +43,6 @@ fun main() = application {
                     while (result.next()) {
                         val id = result.getInt("NoteID")
                         val data = result.getString("data")
-
 
                         list.add(
                             Note(
@@ -69,7 +68,7 @@ fun main() = application {
                         NoteItem(
                             data = note.data,
                             deleteNote = {
-                                statement.executeUpdate("DELET FROM NoteTable WHERE NoteID='${note.noteID}'")
+                                statement.executeUpdate("DELETE  FROM NoteTable WHERE NoteID='${note.noteID}'")
                                 notes.remove(note)
                             },
                             onNoteClicked = {
