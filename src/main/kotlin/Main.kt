@@ -144,6 +144,7 @@ fun main() = application {
 
                     FloatingActionButton(
                         onClick = {
+                            statement.execute(" INSERT INTO NoteTable (data) VALUES ('')")
                             noteState.value = ""
                             val element = Note(data = "", noteID = null)
                             notes.add(element)
